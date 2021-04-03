@@ -5,8 +5,7 @@
     "keywords": ["abstract","mvc", "api"],
     "license": "MIT",
     "require": {
-        "php": "^7.1",
-        "ext-curl": "*"
+        "php": "^7.1"
     },
     "require-dev": {
     	"lucinda/unit-testing": "^1.0"
