@@ -11,9 +11,9 @@ Table of contents:
 
 This API was created to contain parts of a MVC API that do not relate to STDIN type (console, url request or exception to be handled). It serves as a foundation for:
 
-- STDOUT MVC API: where STDIN comes from URL requests
-- STDERR MVC API: where STDIN comes from STDERR of faile
-- Console MVC API
+- [STDOUT MVC API](https://github.com/aherne/php-servlets-api): where STDIN comes from URL requests
+- [STDERR MVC API](https://github.com/aherne/errors-api): where STDIN comes from STDERR of url/console requests
+- Console MVC API (to be done): where STDIN comes from console requests
 
 API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
 
