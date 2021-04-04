@@ -23,7 +23,7 @@ class Application
     protected $routes=array();
     protected $formats=array();
     
-    protected $objectsCache=array();    
+    protected $objectsCache=array();
     
     /**
      * Reads XML supplied

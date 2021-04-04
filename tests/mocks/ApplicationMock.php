@@ -13,4 +13,3 @@ class ApplicationMock extends Application
         $this->setRoutes();
     }
 }
-

@@ -26,4 +26,9 @@ class RouteTest
     {
         return new Result($this->object->getView()=="blog");
     }
+    
+    public function getFormat()
+    {
+        return new Result($this->object->getFormat()=="json");
+    }
 }

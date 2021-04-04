@@ -6,6 +6,5 @@ class JsonResolver extends ViewResolver
 {
     public function run(): void
     {
-        
     }
 }

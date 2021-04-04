@@ -8,6 +8,7 @@ class Route
 {
     private $controller;
     private $view;
+    private $format;
     
     /**
      * Detects route info from <exception> tag
@@ -18,6 +19,7 @@ class Route
     {
         $this->controller = (string) $info["controller"];
         $this->view = (string) $info["view"];
+        $this->format = (string) $info["format"];
     }
 
     /**
@@ -38,5 +40,15 @@ class Route
     public function getView(): string
     {
         return $this->view;
+    }
+    
+    /**
+     * Gets response format.
+     *
+     * @return string
+     */
+    public function getFormat(): string
+    {
+        return $this->format;
     }
 }

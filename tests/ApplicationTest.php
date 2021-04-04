@@ -1,6 +1,6 @@
 <?php
 namespace Test\Lucinda\MVC;
-    
+
 use Lucinda\UnitTest\Result;
 
 require_once("mocks/ApplicationMock.php");
@@ -71,5 +71,5 @@ class ApplicationTest
     public function getXML()
     {
         return new Result($this->object->getXML() instanceof \SimpleXMLElement);
-    }       
+    }
 }
