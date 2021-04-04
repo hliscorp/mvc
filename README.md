@@ -144,7 +144,7 @@ Class [Lucinda\MVC\Application](https://github.com/aherne/mvc/blob/master/src/Ap
 | getVersion | void | string | Gets application version based on *version* attribute @ [application](#application) XML tag |
 | getTag | string $name | [\SimpleXMLElement](https://www.php.net/manual/en/class.simplexmlelement.php) | Gets a pointer to a custom tag in XML root |
 
-Other public method are relevant only to APIs built on top of this.
+Other public methods are relevant only to APIs built on top of this.
 
 ### Class Response
 

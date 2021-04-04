@@ -6,6 +6,7 @@ namespace Lucinda\MVC\Application;
  */
 class Route
 {
+    private $id;
     private $controller;
     private $view;
     private $format;
@@ -17,9 +18,20 @@ class Route
      */
     public function __construct(\SimpleXMLElement $info)
     {
+        $this->id = (string) $info["id"];
         $this->controller = (string) $info["controller"];
         $this->view = (string) $info["view"];
         $this->format = (string) $info["format"];
+    }
+    
+    /**
+     * Gets route unique identifier (eg: url)
+     *
+     * @return string
+     */
+    public function getID(): string
+    {
+        return $this->id;
     }
 
     /**
