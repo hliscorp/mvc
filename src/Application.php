@@ -5,15 +5,9 @@ use Lucinda\MVC\Application\Format;
 use Lucinda\MVC\Application\Route;
 
 /**
- * Detects settings necessary to configure MVC API based on contents of XML file and development environment:
- * - default content types of rendered response
- * - location of controllers that map exceptions thrown
- * - location of views that map exceptions thrown
- * - possible objects to use in reporting error to
- * - possible objects to use in rendering response
- * - possible routes that map controllers/views to exception
+ * Detects settings necessary to configure MVC API based on contents of XML file
  */
-abstract class Application
+class Application
 {
     protected $simpleXMLElement;
     
@@ -22,11 +16,12 @@ abstract class Application
     protected $viewResolversPath;
     
     protected $defaultFormat;
+    protected $defaultRoute;
     
     protected $version;
     
     protected $routes=array();
-    protected $resolvers=array();
+    protected $formats=array();
     
     protected $objectsCache=array();    
     
@@ -36,7 +31,7 @@ abstract class Application
      * @param string $xmlFilePath Relative location of XML file containing settings.
      * @throws ConfigurationException If XML is misconfigured.
      */
-    public function readXML(string $xmlFilePath)
+    protected function readXML(string $xmlFilePath)
     {
         if (!file_exists($xmlFilePath)) {
             throw new ConfigurationException("XML file not found: ".$xmlFilePath);
@@ -46,15 +41,31 @@ abstract class Application
     
     /**
      * Sets basic application info based on contents of "application" XML tag:
-     * - default response format
-     * - controllers path
-     * - views path
-     * - view resolvers path
-     * - version
      *
      * @throws ConfigurationException If xml content has failed validation.
      */
-    abstract protected function setApplicationInfo(): void;
+    protected function setApplicationInfo(): void
+    {
+        $xml = $this->getTag("application");
+        if (empty($xml)) {
+            throw new ConfigurationException("Tag is mandatory: application");
+        }
+        
+        $this->defaultFormat = (string) $xml["default_format"];
+        if (!$this->defaultFormat) {
+            throw new ConfigurationException("Attribute 'default_format' is mandatory for 'application' tag");
+        }
+        
+        $this->defaultRoute = (string) $xml["default_route"];
+        if (!$this->defaultRoute) {
+            throw new ConfigurationException("Attribute 'default_route' is mandatory for 'application' tag");
+        }
+        
+        $this->controllersPath = (string) $xml->paths["controllers"];
+        $this->viewResolversPath = (string) $xml->paths["resolvers"];
+        $this->viewsPath = (string) $xml->paths["views"];
+        $this->version = (string) $xml["version"];
+    }
     
     /**
      * Gets default response display format
@@ -64,6 +75,16 @@ abstract class Application
     public function getDefaultFormat(): string
     {
         return $this->defaultFormat;
+    }
+    
+    /**
+     * Gets default route id
+     *
+     * @return string
+     */
+    public function getDefaultRoute(): string
+    {
+        return $this->defaultRoute;
     }
     
     /**
@@ -77,7 +98,7 @@ abstract class Application
     }
     
     /**
-     * Gets path to view resolvers folder.
+     * Gets path to view formats folder.
      *
      * @return string
      */
@@ -111,20 +132,37 @@ abstract class Application
      *
      * @throws ConfigurationException If xml content has failed validation.
      */
-    abstract protected function setResolvers(): void;
+    protected function setResolvers(): void
+    {
+        $xml = $this->getTag("resolvers");
+        if ($xml===null) {
+            throw new ConfigurationException("Tag is required: resolvers");
+        }
+        $list = $xml->xpath("//resolver");
+        foreach ($list as $info) {
+            $name = (string) $info["format"];
+            if (!$name) {
+                throw new ConfigurationException("Resolver missing 'format' attribute!");
+            }
+            $this->formats[$name] = new Format($info);
+        }
+        if (empty($this->formats)) {
+            throw new ConfigurationException("Tag is empty: resolvers");
+        }
+    }
     
     /**
-     * Gets content of tag format encapsulated as Format objects
+     * Gets content of tag resolver encapsulated as Format objects
      *
      * @param string $displayFormat
      * @return Format|array|null
      */
-    public function formats(string $displayFormat="")
+    public function resolvers(string $displayFormat="")
     {
         if (!$displayFormat) {
-            return $this->resolvers;
+            return $this->formats;
         } else {
-            return (isset($this->resolvers[$displayFormat])?$this->resolvers[$displayFormat]:null);
+            return (isset($this->formats[$displayFormat])?$this->formats[$displayFormat]:null);
         }
     }
     
@@ -133,20 +171,31 @@ abstract class Application
      *
      * @throws ConfigurationException If xml content has failed validation.
      */
-    abstract protected function setRoutes(): void;
+    protected function setRoutes(): void
+    {
+        $xml = $this->getTag("routes");
+        $list = $xml->xpath("//route");
+        foreach ($list as $info) {
+            $id = (string) $info['id'];
+            if (!$id) {
+                throw new ConfigurationException("Route missing 'id' attribute!");
+            }
+            $this->routes[$id] = new Route($info);
+        }
+    }
     
     /**
      * Reads content of tag routes encapsulated as Route objects
      *
-     * @param string $criteria
+     * @param string $id
      * @return Route|array|null
      */
-    public function routes(string $criteria="")
+    public function routes(string $id="")
     {
-        if (!$criteria) {
+        if (!$id) {
             return $this->routes;
         } else {
-            return (isset($this->routes[$criteria])?$this->routes[$criteria]:null);
+            return (isset($this->routes[$id])?$this->routes[$id]:null);
         }
     }
     

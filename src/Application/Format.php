@@ -25,7 +25,7 @@ class Format
      */
     public function __construct(\SimpleXMLElement $info)
     {
-        $this->name = (string) $info["format"];
+        $this->name = (string) $info["name"];
         
         $this->contentType = (string) $info["content_type"];
         if (!$this->contentType) {
