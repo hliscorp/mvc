@@ -211,7 +211,7 @@ Developers need to implement *run* method for each resolver, where they are able
 
 To better understand how *resolvers* attribute @ **[application](#application)** and *class* attribute @ **[format](#formats)** matching *response format* play together in locating class that will resolve views later on, let's take a look at table below:
 
-| resolvers | class | File Loaded | Class Instanced |
+| resolvers folder | class | File Loaded | Class Instanced |
 | --- | --- | --- | --- |
 | application/resolvers | HtmlResolver | application/resolvers/HtmlResolver.php | HtmlResolver |
 | application/resolvers | foo/HtmlResolver | application/resolvers/foo/HtmlResolver.php | HtmlResolver |
@@ -244,5 +244,5 @@ class HtmlResolver extends Lucinda\MVC\ViewResolver
 Defined in XML as:
 
 ```xml
-<format name="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
+<resolver format="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
 ```
