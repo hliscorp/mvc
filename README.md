@@ -6,6 +6,7 @@ Table of contents:
 - [Configuration](#configuration)
 - [Unit Tests](#unit-tests)
 - [Reference Guide](#reference-guide)
+- [Specifications](#specifications)
 
 ## About
 
@@ -17,6 +18,7 @@ This API was created to contain parts of a MVC API that do not relate to STDIN t
 
 API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
 
+- **[configuration](#configuration)**: setting up an XML file where this API is configured
 - **[reference guide](#reference-guide)**: describes all API classes, methods and fields relevant to developers
 - **[unit tests](#unit-tests)**: API has 100% Unit Test coverage, using [UnitTest API](https://github.com/aherne/unit-testing) instead of PHPUnit for greater flexibility
 
@@ -53,11 +55,11 @@ Tag example:
 
 ```xml
 <application default_format="html" default_route="" version="1.0.1">
-	<paths controllers="application/controllers" resolvers="application/resolvers" validators="application/validators" views="application/views"/>
+	<paths controllers="application/controllers" resolvers="application/resolvers" views="application/views"/>
 </application>
 ```
 
-### Formats
+### Resolvers
 
 Base syntax of this tag is:
 
@@ -126,6 +128,8 @@ For tests and examples, check following files/folders in API sources:
 These classes are fully implemented by API:
 
 - [Lucinda\MVC\Application](#class-application): reads [configuration](#configuration) XML file and encapsulates information inside
+    - [Lucinda\MVC\Application\Route](#class-application-route): encapsulates [route](#routes) XML tag matching *id* of request handled
+    - [Lucinda\MVC\Application\Format](#class-application-format): encapsulates [resolver](#resolvers) XML tag matching response *format* for request handled
 - [Lucinda\MVC\Response](#class-response): encapsulates response to send back to caller
     - [Lucinda\MVC\Response\Status](#class-response-status): encapsulates response HTTP status
     - [Lucinda\MVC\Response\View](#class-response-view): encapsulates view template and data that will be bound into a response body
@@ -145,6 +149,30 @@ Class [Lucinda\MVC\Application](https://github.com/aherne/mvc/blob/master/src/Ap
 | getTag | string $name | [\SimpleXMLElement](https://www.php.net/manual/en/class.simplexmlelement.php) | Gets a pointer to a custom tag in XML root |
 
 Other public methods are relevant only to APIs built on top of this.
+
+### Class Application Route
+
+Class [Lucinda\MVC\Application\Route](https://github.com/aherne/mvc/blob/master/src/Application/Route.php) encapsulates information detected from matching [route](#routes) XML tag and defines following public methods:
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| getID | void | string | Gets route unique identifier based on value of *id* XML attribute |
+| getController | void | string | Gets controller class name/path/namespace based on value of *controller* XML attribute |
+| getFormat | void | string | Gets custom route-specific display format based on value of *format* XML attribute matching a *format* attribute of [resolver](#resolvers) XML tag |
+| getView | void | string | Gets view path based on value of *view* XML attribute |
+
+### Class Application Format
+
+Class [Lucinda\MVC\Application\Format](https://github.com/aherne/mvc/blob/master/src/Application/Format.php) encapsulates information detected from matching [resolver](#resolvers) XML tag and defines following public methods:
+
+| Method | Arguments | Returns | Description |
+| --- | --- | --- | --- |
+| getName | void | string | Gets reponse format (extension) based on value of *format* XML attribute |
+| getCharacterEncoding | void | string | Gets response character encoding based on value of *charset* XML attribute |
+| getContentType | void | string | Gets response content type based on value of *content_type* XML attribute |
+| getViewResolver | void | string | Gets view resolver class based on value of *class* attribute |
+
+To better understand how views will be resolved in the end, check [How Are Views Resolved](#how-are-views-resolved) documentation below!
 
 ### Class Response
 
@@ -200,7 +228,7 @@ Interface [Lucinda\MVC\Runnable](https://github.com/aherne/mvc/blob/master/src/R
 
 ### Abstract Class ViewResolver
 
-Abstract class [Lucinda\MVC\ViewResolver](https://github.com/aherne/mvc/blob/master/src/ViewResolver.php) implements [Lucinda\MVC\Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php)) and encapsulates conversion of [Lucinda\MVC\Response\View](#class-response-view) to response body for final response format.
+Abstract class [Lucinda\MVC\ViewResolver](https://github.com/aherne/mvc/blob/master/src/ViewResolver.php) implements [Lucinda\MVC\Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php) and encapsulates conversion of [Lucinda\MVC\Response\View](#class-response-view) to response body for final response format.
 
 Developers need to implement *run* method for each resolver, where they are able to access following protected fields injected by API via constructor:
 
@@ -208,15 +236,6 @@ Developers need to implement *run* method for each resolver, where they are able
 | --- | --- | --- |
 | $application | [Lucinda\MVC\Application](#class-application) | Gets application information detected from XML. |
 | $response | [Lucinda\MVC\Response](#class-response) | Gets access to object based on which response can be manipulated. |
-
-To better understand how *resolvers* attribute @ **[application](#application)** and *class* attribute @ **[format](#formats)** matching *response format* play together in locating class that will resolve views later on, let's take a look at table below:
-
-| resolvers folder | class | File Loaded | Class Instanced |
-| --- | --- | --- | --- |
-| application/resolvers | HtmlResolver | application/resolvers/HtmlResolver.php | HtmlResolver |
-| application/resolvers | foo/HtmlResolver | application/resolvers/foo/HtmlResolver.php | HtmlResolver |
-| application/resolvers | \Foo\HtmlResolver | application/resolvers/HtmlResolver.php | \Foo\HtmlResolver |
-| application/resolvers | foo/\Bar\HtmlResolver | application/resolvers/foo/HtmlResolver.php | \Bar\HtmlResolver |
 
 Example of a resolver for *html* format:
 
@@ -246,3 +265,119 @@ Defined in XML as:
 ```xml
 <resolver format="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
 ```
+
+In order to better understand how view resolvers work, check [How Are View Resolvers Located](#how-are-view-resolvers-found) section below!
+
+## Specifications
+
+Since this API is a skeleton to build MVC APIs on top it comes with a series of specifications that may or may not be automatically implemented here:
+
+- [How Is Response Format Detected](#how-is-response-format-detected)
+- [How Are View Resolvers Located](#how-are-view-resolvers-located)
+- [How Is Route Detected](#how-is-route-detected)
+- [How Are Controllers Located](#how-are-controllers-located)
+
+### How Is Response Format Detected
+
+To better understand how *default_format* and *default_route* attributes in **[application](#application)** XML tag play together with *format* attribute in **[routes](#routes)** tag and *format* attribute in **[resolvers](#resolvers)** tag, let's take this XML for example:
+
+```xml
+<application default_route="index" default_format="html" ...>
+	...
+</application>
+<routes>
+    <route id="index" .../>
+    <route id="blog" format="json" .../>
+    <route id="users" .../>
+    ...
+</routes>
+<resolvers>
+    <resolver format="html" .../>
+    <resolver format="json" .../>
+    ...
+</resolvers>
+```
+
+There will be following situations for above:
+
+| If Route Detected | Then Format Detected | Description |
+| --- | --- | --- |
+| index | html | Because no specific *format* is set, value of *default_format* is used |
+| users | html | Because no specific *format* is set, value of *default_format* is used |
+| blog | json | Because route detected has *format* its value is used |
+
+This logic requires to be implemented by child APIs because the nature of resolvers differs based on STDIN type!
+
+### How Are Views Resolvers Located
+
+To better understand how *resolvers* and *default_format* attributes in **[application](#application)** XML tag play together with *format* and *class* attributes in **[resolvers](#resolvers)** tag, let's take this XML for example:
+
+```xml
+<application default_format="html" ...>
+	<paths resolvers="FOLDER" .../>
+</application>
+...
+<resolvers>
+    <resolver format="html" class="CLASS" .../>
+</resolvers>
+```
+
+There will be following situations for above:
+
+| FOLDER | CLASS | File Loaded | Class Instanced |
+| --- | --- | --- | --- |
+| application/resolvers | HtmlResolver | application/resolvers/HtmlResolver.php | HtmlResolver |
+| application/resolvers | foo/HtmlResolver | application/resolvers/foo/HtmlResolver.php | HtmlResolver |
+| application/resolvers | \Foo\HtmlResolver | application/resolvers/HtmlResolver.php | \Foo\HtmlResolver |
+| application/resolvers | foo/\Bar\HtmlResolver | application/resolvers/foo/HtmlResolver.php | \Bar\HtmlResolver |
+
+This logic is already implemented by this API!
+
+### How Is Route Detected
+
+To better understand how *default_route* attribute in **[application](#application)** XML tag plays together with *id* attribute in **[routes](#routes)** tag, let's take this XML for example:
+
+```xml
+<application default_route="index" ...>
+	...
+</application>
+<routes>
+    <route id="index" .../>
+    <route id="blog" .../>
+    ...
+</routes>
+```
+
+Assuming STDIN comes from HTTP requests, there will be following situations for above:
+
+| If Request Is | Then Route ID Detected | Description |
+| --- | --- | --- |
+| / | index | Because no specific page was requested, that identified by *default_route* is used |
+| /blog | blog | Because page is routed, that whose id matches request is used |
+
+This logic requires to be implemented by child APIs since logic of request depends on STDIN type!
+
+### How Are Controllers Located
+
+To better understand how *controllers* and *default_format* attributes in **[application](#application)** XML tag play together with *id* and *controller* attributes in **[routes](#routes)** tag, let's take this XML for example:
+
+```xml
+<application default_route="default" ...>
+	<paths controllers="FOLDER" .../>
+</application>
+...
+<routes>
+    <route id="default" controller="CLASS" .../>
+</routes>
+```
+
+There will be following situations for above:
+
+| FOLDER | CLASS | File Loaded | Class Instanced |
+| --- | --- | --- | --- |
+| application/controllers | UserController | application/controllers/UserController.php | UserController |
+| application/controllers | foo/UserController | application/controllers/foo/UserController.php | UserController |
+| application/controllers | \Foo\UserController | application/controllers/UserController.php | \Foo\UserController |
+| application/controllers | foo/\Bar\UserController | application/controllers/foo/UserController.php | \Bar\UserController |
+
+This logic requires to be implemented by child APIs since logic of request depends on STDIN type! 
