@@ -7,6 +7,10 @@ Table of contents:
 - [Unit Tests](#unit-tests)
 - [Reference Guide](#reference-guide)
 - [Specifications](#specifications)
+    - [How Is Response Format Detected](#how-is-response-format-detected)
+    - [How Are View Resolvers Located](#how-are-view-resolvers-located)
+    - [How Is Route Detected](#how-is-route-detected)
+    - [How Are Controllers Located](#how-are-controllers-located)
 
 ## About
 
