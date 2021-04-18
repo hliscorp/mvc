@@ -331,7 +331,7 @@ There will be following situations for above:
 | application/resolvers | \Foo\HtmlResolver | application/resolvers/HtmlResolver.php | \Foo\HtmlResolver |
 | application/resolvers | foo/\Bar\HtmlResolver | application/resolvers/foo/HtmlResolver.php | \Bar\HtmlResolver |
 
-This logic is already implemented by this API!
+This logic is entirely implemented by this API! Developers only need to plug in suitable [Lucinda\MVC\ViewResolver](#Abstract Class ViewResolver) classes in XML.
 
 ### How Is Route Detected
 
@@ -380,4 +380,4 @@ There will be following situations for above:
 | application/controllers | \Foo\UserController | application/controllers/UserController.php | \Foo\UserController |
 | application/controllers | foo/\Bar\UserController | application/controllers/foo/UserController.php | \Bar\UserController |
 
-This logic requires to be implemented by child APIs since logic of request depends on STDIN type! 
+This logic requires to be implemented by child APIs since logic of request depends on STDIN type!
