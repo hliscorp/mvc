@@ -1,6 +1,5 @@
 <?php
 require("src/Runnable.php");
-require("src/Locators/ServiceLocator.php");
 require("src/Application.php");
 require("src/Application/Route.php");
 require("src/Application/Format.php");
