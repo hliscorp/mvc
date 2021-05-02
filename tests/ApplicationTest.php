@@ -11,7 +11,7 @@ class ApplicationTest
     
     public function __construct()
     {
-        $this->object = new \ApplicationMock(__DIR__."/configuration.xml");
+        $this->object = new \ApplicationMock(__DIR__."/mocks/configuration.xml");
     }
 
     public function getDefaultFormat()

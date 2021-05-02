@@ -78,14 +78,14 @@ Where:
     - **resolver**: (mandatory) configures a format-specific view resolver based on attributes:
         - *format*: (mandatory) defines display format (extension) handled by view resolver.<br/>Example: "html"
         - *content_type*: (mandatory) defines content type matching display format above. <br/>Example: "text/html"
-        - *class*: (mandatory) name of user-defined class that will resolve views (including namespace or subfolder), found in folder defined by *resolvers* attribute @ **[application](#application)**.<br/>Must be a [Lucinda\MVC\ViewResolver](#abstract-class-viewresolver) instance!
+        - *class*: (mandatory) name of user-defined PS-4 autoload compliant class (including namespace) that will resolve views.<br/>Must be a [Lucinda\MVC\ViewResolver](#abstract-class-viewresolver) instance!
 
 Tag example:
 
 ```xml
 <resolvers>
-    <resolver format="html" content_type="text/html" class="ViewLanguageRenderer" charset="UTF-8"/>
-    <resolver format="json" content_type="application/json" class="JsonRenderer" charset="UTF-8"/>
+    <resolver format="html" content_type="text/html" class="Lucinda\Project\Resolvers\Html" charset="UTF-8"/>
+    <resolver format="json" content_type="application/json" class="Lucinda\Project\Resolvers\Json" charset="UTF-8"/>
 </resolvers>
 ```
 
@@ -105,7 +105,7 @@ Where:
 - **routes**: (mandatory) holds routing rules for handled requests
     - **route**: (optional) holds routing rules specific to a requested URI based on attributes:
         - *id*: (mandatory) unique route identifier (eg: requested requested resource url without trailing slash)<br/>Example: "users/(name)"
-        - *controller*: (optional) holds user-defined controller (including namespace or subfolder) that will mitigate requests and responses based on models, found in folder defined by *controllers* attribute @ **[application](#application)**.<br/>Must be a [Lucinda\MVC\Runnable](#interface-runnable) instance!
+        - *controller*: (optional) name of user-defined PS-4 autoload compliant class (including namespace) that will mitigate requests and responses based on models.<br/>Must be a [Lucinda\MVC\Runnable](#interface-runnable) instance!
         - *view*: (optional) holds user-defined template file that holds the recipe of response for request. Example: "homepage"
         - *format*: (optional) holds response format, if different from *default_format* @ [application](#application).<br/>Must match a *format* attribute @ **[resolvers](#resolvers)**!
 
@@ -243,7 +243,9 @@ Developers need to implement *run* method for each resolver, where they are able
 Example of a resolver for *html* format:
 
 ```php
-class HtmlResolver extends Lucinda\MVC\ViewResolver
+namespace Lucinda\Project\Resolvers;
+
+class Html extends Lucinda\MVC\ViewResolver
 {
     public function run(): void
     {
@@ -266,7 +268,7 @@ class HtmlResolver extends Lucinda\MVC\ViewResolver
 Defined in XML as:
 
 ```xml
-<resolver format="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
+<resolver format="html" content_type="text/html" class="Lucinda\Project\Resolvers\Html" charset="UTF-8"/>
 ```
 
 In order to better understand how view resolvers work, check [How Are View Resolvers Located](#how-are-view-resolvers-found) section below!
