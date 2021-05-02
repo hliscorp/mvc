@@ -11,9 +11,7 @@ class Application
 {
     protected $simpleXMLElement;
     
-    protected $controllersPath;
     protected $viewsPath;
-    protected $viewResolversPath;
     
     protected $defaultFormat;
     protected $defaultRoute;
@@ -61,8 +59,6 @@ class Application
             throw new ConfigurationException("Attribute 'default_route' is mandatory for 'application' tag");
         }
         
-        $this->controllersPath = (string) $xml->paths["controllers"];
-        $this->viewResolversPath = (string) $xml->paths["resolvers"];
         $this->viewsPath = (string) $xml->paths["views"];
         $this->version = (string) $xml["version"];
     }
@@ -85,26 +81,6 @@ class Application
     public function getDefaultRoute(): string
     {
         return $this->defaultRoute;
-    }
-    
-    /**
-     * Gets path to controllers folder.
-     *
-     * @return string
-     */
-    public function getControllersPath(): string
-    {
-        return $this->controllersPath;
-    }
-    
-    /**
-     * Gets path to view formats folder.
-     *
-     * @return string
-     */
-    public function getViewResolversPath(): string
-    {
-        return $this->viewResolversPath;
     }
     
     /**
@@ -142,7 +118,7 @@ class Application
         foreach ($list as $info) {
             $name = (string) $info["format"];
             if (!$name) {
-                throw new ConfigurationException("Resolver missing 'format' attribute!");
+                throw new ConfigurationException("Attribute 'format' is mandatory for 'resolver' tag");
             }
             $this->formats[$name] = new Format($info);
         }
