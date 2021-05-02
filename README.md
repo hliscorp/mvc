@@ -11,6 +11,7 @@ Table of contents:
     - [How Are View Resolvers Located](#how-are-view-resolvers-located)
     - [How Is Route Detected](#how-is-route-detected)
     - [How Are Controllers Located](#how-are-controllers-located)
+    - [How Are Views Located](#how-are-views-located)
 
 ## About
 
@@ -40,7 +41,7 @@ Maximal syntax of this tag is:
 
 ```xml
 <application default_format="..." default_route="..." version="...">
-	<paths controllers="..." resolvers="..." validators="..." views="..."/>
+	<paths views="..."/>
 </application>
 ```
 
@@ -51,15 +52,13 @@ Where:
     - *default_route*: (mandatory) defines implicit route when your application is invoked with none.<br/> Must match a *id* attribute in **[routes](#routes)**!
     - *version*: (optional) defines your application version, to be used in versioning static resources.
     - **paths**: (optional) holds where core components used by API are located based on attributes:
-        - *controllers*: (optional) holds folder in which user-defined controllers will be located  
-        - *resolvers*: (mandatory) holds folder in which user-defined view resolvers will be located
         - *views*: (optional) holds folder in which user-defined views will be located (if HTML)
 
 Tag example:
 
 ```xml
 <application default_format="html" default_route="" version="1.0.1">
-	<paths controllers="application/controllers" resolvers="application/resolvers" views="application/views"/>
+	<paths views="application/views"/>
 </application>
 ```
 
@@ -314,26 +313,25 @@ This logic requires to be implemented by child APIs because the nature of resolv
 
 ### How Are Views Resolvers Located
 
-To better understand how *resolvers* and *default_format* attributes in **[application](#application)** XML tag play together with *format* and *class* attributes in **[resolvers](#resolvers)** tag, let's take this XML for example:
+To better understand how *default_format* attribute in **[application](#application)** XML tag plays together with *format* and *class* attributes in **[resolvers](#resolvers)** tag, let's take this XML for example:
 
 ```xml
 <application default_format="html" ...>
-	<paths resolvers="FOLDER" .../>
+	...
 </application>
 ...
 <resolvers>
-    <resolver format="html" class="CLASS" .../>
+    <resolver format="html" class="Lucinda\Project\ViewResolvers\Html" .../>
 </resolvers>
 ```
 
-There will be following situations for above:
+In that case if "psr-4" attribute in composer.json associates "Lucinda\\Project\\" with "src/" folder then:
 
-| FOLDER | CLASS | File Loaded | Class Instanced |
-| --- | --- | --- | --- |
-| application/resolvers | HtmlResolver | application/resolvers/HtmlResolver.php | HtmlResolver |
-| application/resolvers | foo/HtmlResolver | application/resolvers/foo/HtmlResolver.php | HtmlResolver |
-| application/resolvers | \Foo\HtmlResolver | application/resolvers/HtmlResolver.php | \Foo\HtmlResolver |
-| application/resolvers | foo/\Bar\HtmlResolver | application/resolvers/foo/HtmlResolver.php | \Bar\HtmlResolver |
+- file autoloaded will be src/ViewResolvers/Html.php
+- class found there must:
+    - be named: "Html"
+    - belong to namespace: "Lucinda\Project\ViewResolvers"
+    - extend [Lucinda\MVC\ViewResolver](#Abstract Class ViewResolver)
 
 This logic is entirely implemented by this API! Developers only need to plug in suitable [Lucinda\MVC\ViewResolver](#Abstract Class ViewResolver) classes in XML.
 
@@ -363,25 +361,44 @@ This logic requires to be implemented by child APIs since logic of request depen
 
 ### How Are Controllers Located
 
-To better understand how *controllers* and *default_format* attributes in **[application](#application)** XML tag play together with *id* and *controller* attributes in **[routes](#routes)** tag, let's take this XML for example:
+To better understand how *default_route* attribute in **[application](#application)** XML tag plays together with *id* and *controller* attributes in **[routes](#routes)** tag, let's take this XML for example:
 
 ```xml
-<application default_route="default" ...>
-	<paths controllers="FOLDER" .../>
+<application default_route="index" ...>
+	...
 </application>
 ...
 <routes>
-    <route id="default" controller="CLASS" .../>
+    <route id="index" controller="Lucinda\Project\Controllers\Homepage" .../>
 </routes>
 ```
 
-There will be following situations for above:
+In that case if "psr-4" attribute in composer.json associates "Lucinda\\Project\\" with "src/" folder then:
 
-| FOLDER | CLASS | File Loaded | Class Instanced |
-| --- | --- | --- | --- |
-| application/controllers | UserController | application/controllers/UserController.php | UserController |
-| application/controllers | foo/UserController | application/controllers/foo/UserController.php | UserController |
-| application/controllers | \Foo\UserController | application/controllers/UserController.php | \Foo\UserController |
-| application/controllers | foo/\Bar\UserController | application/controllers/foo/UserController.php | \Bar\UserController |
+- file autoloaded will be: "src/Controllers/Homepage.php"
+- class found there must:
+    - be named: "Homepage"
+    - belong to namespace: "Lucinda\Project\Controllers"
+    - extend Lucinda\**???**\Controller
 
-This logic requires to be implemented by child APIs since logic of request depends on STDIN type!
+As you can see above, controller namespace was ommitted because controller itself must be implemented by child APIs (since it depends on STDIN type).
+
+### How Are Views Located
+
+To better understand how *views* attribute in **[application](#application)** XML tag plays together with *id* and *view* attributes in **[routes](#routes)** tag, let's take this XML for example:
+
+```xml
+<application ...>
+	<paths views="application/views"/>
+</application>
+...
+<routes>
+    <route id="user/info" view="user-info" .../>
+</routes>
+```
+
+In that case if route "user/info" matches STDIN request then:
+
+- file autoloaded will be: "application/views/user-info.**???**"
+
+As you can see above, view extension was ommitted because view itself must be implemented by child APIs (since it depends on STDIN type).
