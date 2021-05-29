@@ -4,6 +4,7 @@ Table of contents:
 
 - [About](#about)
 - [Configuration](#configuration)
+- [Binding Points](#binding-points)
 - [Unit Tests](#unit-tests)
 - [Reference Guide](#reference-guide)
 - [Specifications](#specifications)
@@ -11,10 +12,11 @@ Table of contents:
     - [How Are View Resolvers Located](#how-are-view-resolvers-located)
     - [How Is Route Detected](#how-is-route-detected)
     - [How Are Controllers Located](#how-are-controllers-located)
+    - [How Are Views Located](#how-are-views-located)
 
 ## About
 
-This API was created to contain parts of a MVC API that do not relate to STDIN type (console, url request or exception to be handled). It serves as a foundation for:
+This API is a **skeleton** (requires [binding](#binding-points) by developers) created to contain parts of a MVC API that do not relate to STDIN type (console, url request or exception to be handled). It serves as a foundation for:
 
 - [STDOUT MVC API](https://github.com/aherne/php-servlets-api): where STDIN comes from URL requests
 - [STDERR MVC API](https://github.com/aherne/errors-api): where STDIN comes from STDERR of url/console requests
@@ -23,8 +25,11 @@ This API was created to contain parts of a MVC API that do not relate to STDIN t
 API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
 
 - **[configuration](#configuration)**: setting up an XML file where this API is configured
+- **[binding points](#binding-points)**: binding user-defined components defined in XML/code to API prototypes in order to gain necessary abilities
 - **[reference guide](#reference-guide)**: describes all API classes, methods and fields relevant to developers
 - **[unit tests](#unit-tests)**: API has 100% Unit Test coverage, using [UnitTest API](https://github.com/aherne/unit-testing) instead of PHPUnit for greater flexibility
+
+All classes inside belong to **Lucinda\MVC** namespace!
 
 ## Configuration
 
@@ -40,7 +45,7 @@ Maximal syntax of this tag is:
 
 ```xml
 <application default_format="..." default_route="..." version="...">
-	<paths controllers="..." resolvers="..." validators="..." views="..."/>
+	<paths views="..."/>
 </application>
 ```
 
@@ -51,15 +56,13 @@ Where:
     - *default_route*: (mandatory) defines implicit route when your application is invoked with none.<br/> Must match a *id* attribute in **[routes](#routes)**!
     - *version*: (optional) defines your application version, to be used in versioning static resources.
     - **paths**: (optional) holds where core components used by API are located based on attributes:
-        - *controllers*: (optional) holds folder in which user-defined controllers will be located  
-        - *resolvers*: (mandatory) holds folder in which user-defined view resolvers will be located
         - *views*: (optional) holds folder in which user-defined views will be located (if HTML)
 
 Tag example:
 
 ```xml
 <application default_format="html" default_route="" version="1.0.1">
-	<paths controllers="application/controllers" resolvers="application/resolvers" views="application/views"/>
+	<paths views="application/views"/>
 </application>
 ```
 
@@ -79,14 +82,14 @@ Where:
     - **resolver**: (mandatory) configures a format-specific view resolver based on attributes:
         - *format*: (mandatory) defines display format (extension) handled by view resolver.<br/>Example: "html"
         - *content_type*: (mandatory) defines content type matching display format above. <br/>Example: "text/html"
-        - *class*: (mandatory) name of user-defined class that will resolve views (including namespace or subfolder), found in folder defined by *resolvers* attribute @ **[application](#application)**.<br/>Must be a [Lucinda\MVC\ViewResolver](#abstract-class-viewresolver) instance!
+        - *class*: (mandatory) name of user-defined PS-4 autoload compliant class (including namespace) that will resolve views.<br/>Must be a [ViewResolver](#abstract-class-viewresolver) instance!
 
 Tag example:
 
 ```xml
 <resolvers>
-    <resolver format="html" content_type="text/html" class="ViewLanguageRenderer" charset="UTF-8"/>
-    <resolver format="json" content_type="application/json" class="JsonRenderer" charset="UTF-8"/>
+    <resolver format="html" content_type="text/html" class="Lucinda\Project\Resolvers\Html" charset="UTF-8"/>
+    <resolver format="json" content_type="application/json" class="Lucinda\Project\Resolvers\Json" charset="UTF-8"/>
 </resolvers>
 ```
 
@@ -106,7 +109,7 @@ Where:
 - **routes**: (mandatory) holds routing rules for handled requests
     - **route**: (optional) holds routing rules specific to a requested URI based on attributes:
         - *id*: (mandatory) unique route identifier (eg: requested requested resource url without trailing slash)<br/>Example: "users/(name)"
-        - *controller*: (optional) holds user-defined controller (including namespace or subfolder) that will mitigate requests and responses based on models, found in folder defined by *controllers* attribute @ **[application](#application)**.<br/>Must be a [Lucinda\MVC\Runnable](#interface-runnable) instance!
+        - *controller*: (optional) name of user-defined PS-4 autoload compliant class (including namespace) that will mitigate requests and responses based on models.<br/>Must be a [Runnable](#interface-runnable) instance!
         - *view*: (optional) holds user-defined template file that holds the recipe of response for request. Example: "homepage"
         - *format*: (optional) holds response format, if different from *default_format* @ [application](#application).<br/>Must match a *format* attribute @ **[resolvers](#resolvers)**!
 
@@ -118,6 +121,24 @@ Tag example:
     <route id="user/(id)" controller="UserInfoController" view="user-info" format="json"/>
 </routes>
 ```
+
+## Binding Points
+
+In order to remain flexible and achieve highest performance, API takes no more assumptions than those absolutely required! It offers developers instead an ability to bind to its prototypes via XML:
+
+| XML Attribute @ Tag | Class Prototype | Ability Gained |
+| --- | --- | --- |
+| [controller @ route](#routes) | [Runnable](#interface-runnable) | MVC controller for any STDIN type |
+| [class @ resolver](#resolvers) | [ViewResolver](#abstract-class-viewResolver) | Resolving response in a particular format (eg: html) |
+
+### Programmatic Binding
+
+It offers developers an ability to **bind programmatically** to its prototypes via [FrontController](#initialization) constructor:
+
+| Class Prototype | Ability Gained |
+| --- | --- |
+| [ErrorHandler](#interface-errorhandler) | (mandatory) Handler to use if a [\Throwable](https://www.php.net/manual/en/class.throwable.php) while API handles request into response |
+
 
 ## Unit Tests
 
@@ -131,21 +152,21 @@ For tests and examples, check following files/folders in API sources:
 
 These classes are fully implemented by API:
 
-- [Lucinda\MVC\Application](#class-application): reads [configuration](#configuration) XML file and encapsulates information inside
-    - [Lucinda\MVC\Application\Route](#class-application-route): encapsulates [route](#routes) XML tag matching *id* of request handled
-    - [Lucinda\MVC\Application\Format](#class-application-format): encapsulates [resolver](#resolvers) XML tag matching response *format* for request handled
-- [Lucinda\MVC\Response](#class-response): encapsulates response to send back to caller
-    - [Lucinda\MVC\Response\Status](#class-response-status): encapsulates response HTTP status
-    - [Lucinda\MVC\Response\View](#class-response-view): encapsulates view template and data that will be bound into a response body
+- [Application](#class-application): reads [configuration](#configuration) XML file and encapsulates information inside
+    - [Application\Route](#class-application-route): encapsulates [route](#routes) XML tag matching *id* of request handled
+    - [Application\Format](#class-application-format): encapsulates [resolver](#resolvers) XML tag matching response *format* for request handled
+- [Response](#class-response): encapsulates response to send back to caller
+    - [Response\Status](#class-response-status): encapsulates response HTTP status
+    - [Response\View](#class-response-view): encapsulates view template and data that will be bound into a response body
 
 Following abstract classes require to be extended by developers in order to gain an ability:
 
-- [Lucinda\MVC\Runnable](#interface-runnable): defines blueprint for a component whose logic can be *run*
-- [Lucinda\MVC\ViewResolver](#abstract-class-viewresolver): encapsulates conversion of [Lucinda\MVC\Response\View](#class-response-view) into a [Lucinda\MVC\Response](#class-response) body
+- [Runnable](#interface-runnable): defines blueprint for a component whose logic can be *run*
+- [ViewResolver](#abstract-class-viewresolver): encapsulates conversion of [Response\View](#class-response-view) into a [Response](#class-response) body
 
 ### Class Application
 
-Class [Lucinda\MVC\Application](https://github.com/aherne/mvc/blob/master/src/Application.php) encapsulates information detected from XML and defines following public methods relevant to developers:
+Class [Application](https://github.com/aherne/mvc/blob/master/src/Application.php) encapsulates information detected from XML and defines following public methods relevant to developers:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
@@ -156,7 +177,7 @@ Other public methods are relevant only to APIs built on top of this.
 
 ### Class Application Route
 
-Class [Lucinda\MVC\Application\Route](https://github.com/aherne/mvc/blob/master/src/Application/Route.php) encapsulates information detected from matching [route](#routes) XML tag and defines following public methods:
+Class [Application\Route](https://github.com/aherne/mvc/blob/master/src/Application/Route.php) encapsulates information detected from matching [route](#routes) XML tag and defines following public methods:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
@@ -167,7 +188,7 @@ Class [Lucinda\MVC\Application\Route](https://github.com/aherne/mvc/blob/master/
 
 ### Class Application Format
 
-Class [Lucinda\MVC\Application\Format](https://github.com/aherne/mvc/blob/master/src/Application/Format.php) encapsulates information detected from matching [resolver](#resolvers) XML tag and defines following public methods:
+Class [Application\Format](https://github.com/aherne/mvc/blob/master/src/Application/Format.php) encapsulates information detected from matching [resolver](#resolvers) XML tag and defines following public methods:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
@@ -180,26 +201,26 @@ To better understand how views will be resolved in the end, check [How Are Views
 
 ### Class Response
 
-Class [Lucinda\MVC\Response](https://github.com/aherne/mvc/blob/master/src/Response.php) encapsulates operations to be used in generating response. It defines following public methods relevant to developers:
+Class [Response](https://github.com/aherne/mvc/blob/master/src/Response.php) encapsulates operations to be used in generating response. It defines following public methods relevant to developers:
 
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
 | getBody | void | string | Gets response body saved by method below. |
 | setBody | string $body | void | Sets response body. |
-| getStatus | void | [Lucinda\MVC\Response\Status](#class-response-status) | Gets response http status based on code saved by method below. |
+| getStatus | void | [Response\Status](#class-response-status) | Gets response http status based on code saved by method below. |
 | setStatus | int $code | void | Sets response http status code. |
 | headers | void | array | Gets all response http headers saved by methods below. |
 | headers | string $name | ?string | Gets value of a response http header based on its name. If not found, null is returned! |
 | headers | string $name, string $value | void | Sets value of response http header based on its name. |
 | redirect | string $location, bool $permanent=true, bool $preventCaching=false | void | Redirects caller to location url using 301 http status if permanent, otherwise 302. |
-| view | void | [Lucinda\MVC\Response\View](#class-response-view) | Gets a pointer to view encapsulating data based on which response body will be compiled |
+| view | void | [Response\View](#class-response-view) | Gets a pointer to view encapsulating data based on which response body will be compiled |
 
 When API completes handling, it will call *commit* method to send headers and response body back to caller!
 
 ### Class Response Status
 
-Class [Lucinda\MVC\Response\Status](https://github.com/aherne/mvc/blob/master/src/Response/Status.php) encapsulates response HTTP status and defines following public methods relevant to developers:
+Class [Response\Status](https://github.com/aherne/mvc/blob/master/src/Response/Status.php) encapsulates response HTTP status and defines following public methods relevant to developers:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
@@ -208,7 +229,7 @@ Class [Lucinda\MVC\Response\Status](https://github.com/aherne/mvc/blob/master/sr
 
 ### Class Response View
 
-Class [Lucinda\MVC\Response\View](https://github.com/aherne/mvc/blob/master/src/Response/View.php) implements [\ArrayAccess](https://www.php.net/manual/en/class.arrayaccess.php) and encapsulates template and data that will later be bound to a response body. It defines following public methods relevant to developers:
+Class [Response\View](https://github.com/aherne/mvc/blob/master/src/Response/View.php) implements [\ArrayAccess](https://www.php.net/manual/en/class.arrayaccess.php) and encapsulates template and data that will later be bound to a response body. It defines following public methods relevant to developers:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
@@ -224,51 +245,30 @@ $this->response->view()["hello"] = "world";
 
 ### Interface Runnable
 
-Interface [Lucinda\MVC\Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php) interface it implements, class comes with following public method:
+Interface [Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php) interface it implements, class comes with following public method:
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
 | run |  | void | Executes component logic |
 
+Usage example: 
+
+https://github.com/aherne/lucinda-framework/blob/master/src/Controllers/SecurityPacket.php
+
 ### Abstract Class ViewResolver
 
-Abstract class [Lucinda\MVC\ViewResolver](https://github.com/aherne/mvc/blob/master/src/ViewResolver.php) implements [Lucinda\MVC\Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php) and encapsulates conversion of [Lucinda\MVC\Response\View](#class-response-view) to response body for final response format.
+Abstract class [ViewResolver](https://github.com/aherne/mvc/blob/master/src/ViewResolver.php) implements [Runnable](https://github.com/aherne/mvc/blob/master/src/Runnable.php) and encapsulates conversion of [Response\View](#class-response-view) to response body for final response format.
 
 Developers need to implement *run* method for each resolver, where they are able to access following protected fields injected by API via constructor:
 
 | Field | Type | Description |
 | --- | --- | --- |
-| $application | [Lucinda\MVC\Application](#class-application) | Gets application information detected from XML. |
-| $response | [Lucinda\MVC\Response](#class-response) | Gets access to object based on which response can be manipulated. |
+| $application | [Application](#class-application) | Gets application information detected from XML. |
+| $response | [Response](#class-response) | Gets access to object based on which response can be manipulated. |
 
-Example of a resolver for *html* format:
+Usage example:
 
-```php
-class HtmlResolver extends Lucinda\MVC\ViewResolver
-{
-    public function run(): void
-    {
-        $view = $this->response->view();
-        if ($view->getFile()) {
-            if (!file_exists($view->getFile().".html")) {
-                throw new Exception("View file not found");
-            }
-            ob_start();
-            $_VIEW = $view->getData();
-            require($view->getFile().".html");
-            $output = ob_get_contents();
-            ob_end_clean();
-            $this->response->setBody($output);
-        }
-    }
-}
-```
-
-Defined in XML as:
-
-```xml
-<resolver format="html" content_type="text/html" class="HtmlResolver" charset="UTF-8"/>
-```
+https://github.com/aherne/lucinda-framework/blob/master/src/ViewResolvers/Html.php
 
 In order to better understand how view resolvers work, check [How Are View Resolvers Located](#how-are-view-resolvers-found) section below!
 
@@ -314,28 +314,27 @@ This logic requires to be implemented by child APIs because the nature of resolv
 
 ### How Are Views Resolvers Located
 
-To better understand how *resolvers* and *default_format* attributes in **[application](#application)** XML tag play together with *format* and *class* attributes in **[resolvers](#resolvers)** tag, let's take this XML for example:
+To better understand how *default_format* attribute in **[application](#application)** XML tag plays together with *format* and *class* attributes in **[resolvers](#resolvers)** tag, let's take this XML for example:
 
 ```xml
 <application default_format="html" ...>
-	<paths resolvers="FOLDER" .../>
+	...
 </application>
 ...
 <resolvers>
-    <resolver format="html" class="CLASS" .../>
+    <resolver format="html" class="Lucinda\Project\ViewResolvers\Html" .../>
 </resolvers>
 ```
 
-There will be following situations for above:
+In that case if "psr-4" attribute in composer.json associates "Lucinda\\Project\\" with "src/" folder then:
 
-| FOLDER | CLASS | File Loaded | Class Instanced |
-| --- | --- | --- | --- |
-| application/resolvers | HtmlResolver | application/resolvers/HtmlResolver.php | HtmlResolver |
-| application/resolvers | foo/HtmlResolver | application/resolvers/foo/HtmlResolver.php | HtmlResolver |
-| application/resolvers | \Foo\HtmlResolver | application/resolvers/HtmlResolver.php | \Foo\HtmlResolver |
-| application/resolvers | foo/\Bar\HtmlResolver | application/resolvers/foo/HtmlResolver.php | \Bar\HtmlResolver |
+- file autoloaded will be src/ViewResolvers/Html.php
+- class found there must:
+    - be named: "Html"
+    - belong to namespace: "Lucinda\Project\ViewResolvers"
+    - extend [ViewResolver](#abstract-class-viewresolver)
 
-This logic is entirely implemented by this API! Developers only need to plug in suitable [Lucinda\MVC\ViewResolver](#Abstract Class ViewResolver) classes in XML.
+This logic is entirely implemented by this API! Developers only need to plug in suitable [ViewResolver](#abstract-class-viewresolver) classes in XML.
 
 ### How Is Route Detected
 
@@ -363,25 +362,44 @@ This logic requires to be implemented by child APIs since logic of request depen
 
 ### How Are Controllers Located
 
-To better understand how *controllers* and *default_format* attributes in **[application](#application)** XML tag play together with *id* and *controller* attributes in **[routes](#routes)** tag, let's take this XML for example:
+To better understand how *default_route* attribute in **[application](#application)** XML tag plays together with *id* and *controller* attributes in **[routes](#routes)** tag, let's take this XML for example:
 
 ```xml
-<application default_route="default" ...>
-	<paths controllers="FOLDER" .../>
+<application default_route="index" ...>
+	...
 </application>
 ...
 <routes>
-    <route id="default" controller="CLASS" .../>
+    <route id="index" controller="Lucinda\Project\Controllers\Homepage" .../>
 </routes>
 ```
 
-There will be following situations for above:
+In that case if "psr-4" attribute in composer.json associates "Lucinda\\Project\\" with "src/" folder then:
 
-| FOLDER | CLASS | File Loaded | Class Instanced |
-| --- | --- | --- | --- |
-| application/controllers | UserController | application/controllers/UserController.php | UserController |
-| application/controllers | foo/UserController | application/controllers/foo/UserController.php | UserController |
-| application/controllers | \Foo\UserController | application/controllers/UserController.php | \Foo\UserController |
-| application/controllers | foo/\Bar\UserController | application/controllers/foo/UserController.php | \Bar\UserController |
+- file autoloaded will be: "src/Controllers/Homepage.php"
+- class found there must:
+    - be named: "Homepage"
+    - belong to namespace: "Lucinda\Project\Controllers"
+    - extend Lucinda\**???**\Controller
 
-This logic requires to be implemented by child APIs since logic of request depends on STDIN type!
+As you can see above, controller namespace was ommitted because controller itself must be implemented by child APIs (since it depends on STDIN type).
+
+### How Are Views Located
+
+To better understand how *views* attribute in **[application](#application)** XML tag plays together with *id* and *view* attributes in **[routes](#routes)** tag, let's take this XML for example:
+
+```xml
+<application ...>
+	<paths views="application/views"/>
+</application>
+...
+<routes>
+    <route id="user/info" view="user-info" .../>
+</routes>
+```
+
+In that case if route "user/info" matches STDIN request then:
+
+- file autoloaded will be: "application/views/user-info.**???**"
+
+As you can see above, view extension was ommitted because view itself must be implemented by child APIs (since it depends on STDIN type).

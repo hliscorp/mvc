@@ -11,7 +11,7 @@ class ApplicationTest
     
     public function __construct()
     {
-        $this->object = new \ApplicationMock(__DIR__."/configuration.xml");
+        $this->object = new \ApplicationMock(__DIR__."/mocks/configuration.xml");
     }
 
     public function getDefaultFormat()
@@ -23,20 +23,7 @@ class ApplicationTest
     public function getDefaultRoute()
     {
         return new Result($this->object->getDefaultRoute()=="index");
-    }
-        
-
-    public function getControllersPath()
-    {
-        return new Result($this->object->getControllersPath()=="tests/mocks");
-    }
-        
-
-    public function getViewResolversPath()
-    {
-        return new Result($this->object->getViewResolversPath()=="tests/mocks");
-    }
-        
+    }        
 
     public function getViewsPath()
     {
