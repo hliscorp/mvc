@@ -12,7 +12,8 @@
     },
     "autoload": {
     	"psr-4": {
-        	"Lucinda\\MVC\\": "src/"
+        	"Lucinda\\MVC\\": "src/",
+                "Test\\Lucinda\\MVC\\":"tests/"
     	}
     },
     "authors": [
