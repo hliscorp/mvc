@@ -1,6 +1,7 @@
 <?php
 namespace Lucinda\MVC;
 
+use Lucinda\MVC\Response\HttpStatus;
 use Lucinda\MVC\Response\Status;
 use Lucinda\MVC\Response\View;
 
@@ -29,12 +30,11 @@ class Response
     /**
      * Sets HTTP response status by its numeric code.
      *
-     * @param integer $code
-     * @throws ConfigurationException If status code is invalid.
+     * @param HttpStatus $status
      */
-    public function setStatus(int $code): void
+    public function setStatus(HttpStatus $status): void
     {
-        $this->status = new Status($code);
+        $this->status = new Status($status);
     }
 
     /**

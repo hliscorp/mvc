@@ -208,8 +208,8 @@ Class [Response](https://github.com/aherne/mvc/blob/master/src/Response.php) enc
 | --- | --- | --- | --- |
 | getBody | void | string | Gets response body saved by method below. |
 | setBody | string $body | void | Sets response body. |
-| getStatus | void | [Response\Status](#class-response-status) | Gets response http status based on code saved by method below. |
-| setStatus | int $code | void | Sets response http status code. |
+| getStatus | void | [Response\Status](#class-response-status) | Gets response http status saved by method below. |
+| setStatus | [Response\HttpStatus](https://github.com/aherne/mvc/blob/master/src/Response/HttpStatus.php) | void | Sets response http status and splits it into id and description |
 | headers | void | array | Gets all response http headers saved by methods below. |
 | headers | string $name | ?string | Gets value of a response http header based on its name. If not found, null is returned! |
 | headers | string $name, string $value | void | Sets value of response http header based on its name. |
@@ -224,8 +224,8 @@ Class [Response\Status](https://github.com/aherne/mvc/blob/master/src/Response/S
 
 | Method | Arguments | Returns | Description |
 | --- | --- | --- | --- |
-| getDescription | void | string | Gets response http status code description (eg: "not modified"). |
-| getId | void | int | Sets response http status code. |
+| getId | void | int | Gets http response status id (eg: "304") |
+| getDescription | void | string | Gets http response status description (eg: "not modified"). |
 
 ### Class Response View
 
