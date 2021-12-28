@@ -12,10 +12,10 @@ use Lucinda\MVC\ConfigurationException;
  */
 class Format
 {
-    private $name;
-    private $contentType;
-    private $viewResolverClass;
-    private $characterEncoding;
+    private string $name;
+    private string $contentType;
+    private string $viewResolverClass;
+    private string $characterEncoding;
 
     /**
      * Detects format info from <resolver> tag

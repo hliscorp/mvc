@@ -9,19 +9,19 @@ use Lucinda\MVC\Application\Route;
  */
 class Application
 {
-    protected $simpleXMLElement;
+    protected \SimpleXMLElement $simpleXMLElement;
     
-    protected $viewsPath;
+    protected string $viewsPath;
     
-    protected $defaultFormat;
-    protected $defaultRoute;
+    protected string $defaultFormat;
+    protected string $defaultRoute;
     
-    protected $version;
+    protected string $version;
     
-    protected $routes=array();
-    protected $formats=array();
+    protected array $routes=array();
+    protected array $formats=array();
     
-    protected $objectsCache=array();
+    protected array $objectsCache=array();
     
     /**
      * Reads XML supplied
@@ -29,7 +29,7 @@ class Application
      * @param string $xmlFilePath Relative location of XML file containing settings.
      * @throws ConfigurationException If XML is misconfigured.
      */
-    protected function readXML(string $xmlFilePath)
+    protected function readXML(string $xmlFilePath): void
     {
         if (!file_exists($xmlFilePath)) {
             throw new ConfigurationException("XML file not found: ".$xmlFilePath);
@@ -133,12 +133,12 @@ class Application
      * @param string $displayFormat
      * @return Format|array|null
      */
-    public function resolvers(string $displayFormat="")
+    public function resolvers(string $displayFormat=""): Format|array|null
     {
         if (!$displayFormat) {
             return $this->formats;
         } else {
-            return (isset($this->formats[$displayFormat])?$this->formats[$displayFormat]:null);
+            return ($this->formats[$displayFormat] ?? null);
         }
     }
     
@@ -166,12 +166,12 @@ class Application
      * @param string $id
      * @return Route|array|null
      */
-    public function routes(string $id="")
+    public function routes(string $id=""): Route|array|null
     {
         if (!$id) {
             return $this->routes;
         } else {
-            return (isset($this->routes[$id])?$this->routes[$id]:null);
+            return ($this->routes[$id] ?? null);
         }
     }
     

@@ -74,7 +74,7 @@ class Status
         599=>'Network Connect Timeout Error',
     );
 
-    private $id;
+    private int $id;
 
     /**
      * Sets response HTTP status by its numeric code
@@ -84,7 +84,7 @@ class Status
      */
     public function __construct(int $code)
     {
-        if (!array_key_exists($code, self::HTTP_STATUSES)) {
+        if (!isset(self::HTTP_STATUSES[$code])) {
             throw new ConfigurationException("Unsupported HTTP status: ".$code);
         }
         $this->id = $code;

@@ -6,8 +6,8 @@ namespace Lucinda\MVC\Response;
  */
 class View implements \ArrayAccess
 {
-    private $file;
-    private $data = [];
+    private string $file;
+    private array $data = [];
     
     /**
      * Sets path to template that will be the foundation of view
@@ -55,7 +55,7 @@ class View implements \ArrayAccess
      * @param mixed $offset
      * @return bool
      */
-    public function offsetExists($offset): bool
+    public function offsetExists(mixed $offset): bool
     {
         return isset($this->data[$offset]);
     }
@@ -64,11 +64,11 @@ class View implements \ArrayAccess
      * Gets value sent to view by offset or null if offset not found
      *
      * @param mixed $offset
-     * @return NULL|mixed
+     * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet(mixed $offset): mixed
     {
-        return (isset($this->data[$offset])?$this->data[$offset]:null);
+        return ($this->data[$offset] ?? null);
     }
     
     /**
@@ -77,7 +77,7 @@ class View implements \ArrayAccess
      * @param mixed $offset
      * @param mixed $value
      */
-    public function offsetSet($offset, $value): void
+    public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->data[$offset] = $value;
     }
@@ -86,7 +86,7 @@ class View implements \ArrayAccess
      * Removes value from view by offset
      * @param mixed $offset
      */
-    public function offsetUnset($offset): void
+    public function offsetUnset(mixed $offset): void
     {
         unset($this->data[$offset]);
     }

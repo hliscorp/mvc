@@ -9,10 +9,10 @@ use Lucinda\MVC\Response\View;
  */
 class Response
 {
-    private $status;
-    private $headers = array();
-    private $body;
-    private $view;
+    private ?Status $status = null;
+    private array $headers = array();
+    private ?string $body = null;
+    private View $view;
 
     /**
      * Constructs an empty response based on content type
@@ -56,22 +56,23 @@ class Response
     {
         return $this->view;
     }
-    
+
     /**
      * Gets or sets response headers will send back to user.
      *
      * @param string $key
-     * @param string $value
+     * @param string|null $value
      * @return string|array|null
      */
-    public function headers(string $key="", string $value=null)
+    public function headers(string $key="", string $value=null): string|array|null
     {
         if (!$key) {
             return $this->headers;
         } elseif ($value===null) {
-            return (isset($this->headers[$key])?$this->headers[$key]:null);
+            return ($this->headers[$key] ?? null);
         } else {
             $this->headers[$key] = $value;
+            return null;
         }
     }
     
@@ -88,7 +89,7 @@ class Response
     /**
      * Gets response body
      *
-     * @return string
+     * @return ?string
      */
     public function getBody(): ?string
     {
@@ -102,7 +103,7 @@ class Response
      * @param boolean $permanent
      * @param boolean $preventCaching
      */
-    public static function redirect(string $location, bool $permanent=true, bool $preventCaching=false): void
+    public static function redirect(string $location, bool $permanent=true, bool $preventCaching=false): never
     {
         if ($preventCaching) {
             header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.

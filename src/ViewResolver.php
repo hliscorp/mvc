@@ -6,15 +6,8 @@ namespace Lucinda\MVC;
  */
 abstract class ViewResolver implements Runnable
 {
-    /**
-     * @var Application
-     */
-    protected $application;
-    
-    /**
-     * @var Response
-     */
-    protected $response;
+    protected Application $application;
+    protected Response $response;
     
     /**
      * Saves objects to be available in implemented getContent() methods.

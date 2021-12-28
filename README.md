@@ -22,7 +22,7 @@ This API is a **skeleton** (requires [binding](#binding-points) by developers) c
 - [STDERR MVC API](https://github.com/aherne/errors-api): where STDIN comes from STDERR of url/console requests
 - Console MVC API (to be done): where STDIN comes from console requests
 
-API is fully PSR-4 compliant, only requiring PHP7.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
+API is fully PSR-4 compliant, only requiring PHP8.1+ interpreter and SimpleXML extension. To quickly see how it works, check:
 
 - **[configuration](#configuration)**: setting up an XML file where this API is configured
 - **[binding points](#binding-points)**: binding user-defined components defined in XML/code to API prototypes in order to gain necessary abilities

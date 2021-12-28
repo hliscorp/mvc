@@ -6,10 +6,10 @@ namespace Lucinda\MVC\Application;
  */
 class Route
 {
-    private $id;
-    private $controller;
-    private $view;
-    private $format;
+    private string $id;
+    private string $controller;
+    private string $view;
+    private string $format;
     
     /**
      * Detects route info from <exception> tag
