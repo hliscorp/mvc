@@ -2,6 +2,7 @@
 require("src/Application/Format.php");
 require("src/Application/Route.php");
 require("src/Application.php");
+require("src/Response/HttpStatus.php");
 require("src/Response/Status.php");
 require("src/Response/View.php");
 require("src/Response.php");
