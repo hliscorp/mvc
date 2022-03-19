@@ -114,7 +114,7 @@ class Application
         if ($xml===null) {
             throw new ConfigurationException("Tag is required: resolvers");
         }
-        $list = $xml->xpath("//resolver");
+        $list = $xml->xpath("resolver");
         foreach ($list as $info) {
             $name = (string) $info["format"];
             if (!$name) {
@@ -150,7 +150,7 @@ class Application
     protected function setRoutes(): void
     {
         $xml = $this->getTag("routes");
-        $list = $xml->xpath("//route");
+        $list = $xml->xpath("route");
         foreach ($list as $info) {
             $id = (string) $info['id'];
             if (!$id) {
