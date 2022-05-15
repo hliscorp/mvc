@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC;
 
 use Lucinda\MVC\Application\Format;
@@ -10,19 +11,27 @@ use Lucinda\MVC\Application\Route;
 class Application
 {
     protected \SimpleXMLElement $simpleXMLElement;
-    
+
     protected string $viewsPath;
-    
+
     protected string $defaultFormat;
     protected string $defaultRoute;
-    
+
     protected string $version;
-    
+
+    /**
+     * @var array<string,Route>
+     */
     protected array $routes=array();
+    /**
+     * @var array<string,Format>
+     */
     protected array $formats=array();
-    
+    /**
+     * @var array<string,\SimpleXMLElement>
+     */
     protected array $objectsCache=array();
-    
+
     /**
      * Reads XML supplied
      *
@@ -36,7 +45,7 @@ class Application
         }
         $this->simpleXMLElement = simplexml_load_file($xmlFilePath);
     }
-    
+
     /**
      * Sets basic application info based on contents of "application" XML tag:
      *
@@ -48,21 +57,21 @@ class Application
         if (empty($xml)) {
             throw new ConfigurationException("Tag is mandatory: application");
         }
-        
+
         $this->defaultFormat = (string) $xml["default_format"];
         if (!$this->defaultFormat) {
             throw new ConfigurationException("Attribute 'default_format' is mandatory for 'application' tag");
         }
-        
+
         $this->defaultRoute = (string) $xml["default_route"];
         if (!$this->defaultRoute) {
             throw new ConfigurationException("Attribute 'default_route' is mandatory for 'application' tag");
         }
-        
+
         $this->viewsPath = (string) $xml->paths["views"];
         $this->version = (string) $xml["version"];
     }
-    
+
     /**
      * Gets default response display format
      *
@@ -72,7 +81,7 @@ class Application
     {
         return $this->defaultFormat;
     }
-    
+
     /**
      * Gets default route id
      *
@@ -82,7 +91,7 @@ class Application
     {
         return $this->defaultRoute;
     }
-    
+
     /**
      * Gets path to views folder.
      *
@@ -92,7 +101,7 @@ class Application
     {
         return $this->viewsPath;
     }
-    
+
     /**
      * Gets application version.
      *
@@ -102,7 +111,7 @@ class Application
     {
         return $this->version;
     }
-    
+
     /**
      * Sets view resolvers info based on contents of "resolvers" XML tag
      *
@@ -111,7 +120,7 @@ class Application
     protected function setResolvers(): void
     {
         $xml = $this->getTag("resolvers");
-        if ($xml===null) {
+        if (empty($xml)) {
             throw new ConfigurationException("Tag is required: resolvers");
         }
         $list = $xml->xpath("resolver");
@@ -126,12 +135,12 @@ class Application
             throw new ConfigurationException("Tag is empty: resolvers");
         }
     }
-    
+
     /**
      * Gets content of tag resolver encapsulated as Format objects
      *
      * @param string $displayFormat
-     * @return Format|array|null
+     * @return Format|array<string, Format>|null
      */
     public function resolvers(string $displayFormat=""): Format|array|null
     {
@@ -141,7 +150,7 @@ class Application
             return ($this->formats[$displayFormat] ?? null);
         }
     }
-    
+
     /**
      * Sets routes info based on contents of "routes" XML tag
      *
@@ -159,12 +168,12 @@ class Application
             $this->routes[$id] = new Route($info);
         }
     }
-    
+
     /**
      * Reads content of tag routes encapsulated as Route objects
      *
      * @param string $id
-     * @return Route|array|null
+     * @return Route|array<string, Route>|null
      */
     public function routes(string $id=""): Route|array|null
     {
@@ -174,7 +183,7 @@ class Application
             return ($this->routes[$id] ?? null);
         }
     }
-    
+
     /**
      * Gets tag based on name from main XML root or referenced XML file if "ref" attribute was set
      *

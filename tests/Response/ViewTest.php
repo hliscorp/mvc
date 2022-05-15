@@ -1,4 +1,5 @@
 <?php
+
 namespace Test\Lucinda\MVC\Response;
 
 use Lucinda\MVC\Response\View;
@@ -7,7 +8,7 @@ use Lucinda\UnitTest\Result;
 class ViewTest
 {
     private $object;
-    
+
     public function __construct()
     {
         $this->object = new View("index");
@@ -18,13 +19,13 @@ class ViewTest
         $this->object->setFile("admin");
         return new Result(true);
     }
-        
+
 
     public function getFile()
     {
         return new Result($this->object->getFile()=="admin");
     }
-        
+
 
     public function getData()
     {
@@ -37,13 +38,13 @@ class ViewTest
     {
         return new Result($this->object->offsetExists("test1"));
     }
-        
+
 
     public function offsetGet()
     {
         return new Result($this->object->offsetGet("test1")=="me1");
     }
-        
+
 
     public function offsetSet()
     {

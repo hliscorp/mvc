@@ -213,7 +213,6 @@ Class [Response](https://github.com/aherne/mvc/blob/master/src/Response.php) enc
 | headers | void | array | Gets all response http headers saved by methods below. |
 | headers | string $name | ?string | Gets value of a response http header based on its name. If not found, null is returned! |
 | headers | string $name, string $value | void | Sets value of response http header based on its name. |
-| redirect | string $location, bool $permanent=true, bool $preventCaching=false | void | Redirects caller to location url using 301 http status if permanent, otherwise 302. |
 | view | void | [Response\View](#class-response-view) | Gets a pointer to view encapsulating data based on which response body will be compiled |
 
 When API completes handling, it will call *commit* method to send headers and response body back to caller!
@@ -241,6 +240,25 @@ By virtue of implementing [\ArrayAccess](https://www.php.net/manual/en/class.arr
 
 ```php
 $this->response->view()["hello"] = "world";
+```
+
+### Class Response Redirect
+
+Class [Response\Redirect](https://github.com/aherne/mvc/blob/master/src/Response/Redirect.php) is a [Runnable](#interface-runnable) that encapsulates http status 301/302 redirection with its options. It defines following public methods relevant to developers:
+
+| Method            | Arguments        | Returns | Description                                                                            |
+|-------------------|------------------| --- |----------------------------------------------------------------------------------------|
+| __construct       | string $location | void | Sets location to redirect to (by default redirection will be permanent and cacheable). |
+| setPermanent      | bool $flag       | void | Sets whether redirection is permanent.                                                 |
+| setPreventCaching | bool $flag       | void | Sets whether browsers should prevent caching redirection.                              |
+| run               | -                | void | Performs redirection and exits code.                                                   |
+
+Example:
+
+```phpregexp
+$redirection = new Lucinda\\MVC\\Redirect("https://www.google.com");
+$redirection->setPermanent(false);
+$redirection->run();
 ```
 
 ### Interface Runnable

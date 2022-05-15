@@ -1,4 +1,5 @@
 <?php
+
 use Lucinda\MVC\Application;
 use Lucinda\MVC\Application\Format;
 use Lucinda\MVC\Application\Route;

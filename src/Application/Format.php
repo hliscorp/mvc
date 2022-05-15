@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC\Application;
 
 use Lucinda\MVC\ConfigurationException;
@@ -26,14 +27,14 @@ class Format
     public function __construct(\SimpleXMLElement $info)
     {
         $this->name = (string) $info["name"];
-        
+
         $this->contentType = (string) $info["content_type"];
         if (!$this->contentType) {
             throw new ConfigurationException("Attribute 'content_type' is mandatory for 'resolver' tag");
         }
-        
+
         $this->characterEncoding = (string) $info["charset"];
-        
+
         $this->viewResolverClass = (string) $info['class'];
         if (!$this->viewResolverClass) {
             throw new ConfigurationException("Attribute 'class' is mandatory for 'resolver' tag");
@@ -61,7 +62,7 @@ class Format
     {
         return $this->contentType;
     }
-    
+
     /**
      * Gets character encoding (charset)
      *

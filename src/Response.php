@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC;
 
 use Lucinda\MVC\Response\HttpStatus;
@@ -11,6 +12,9 @@ use Lucinda\MVC\Response\View;
 class Response
 {
     private ?Status $status = null;
+    /**
+     * @var array<string,string>
+     */
     private array $headers = array();
     private ?string $body = null;
     private View $view;
@@ -46,7 +50,7 @@ class Response
     {
         return $this->status;
     }
-    
+
     /**
      * Gets a pointer to View
      *
@@ -62,7 +66,7 @@ class Response
      *
      * @param string $key
      * @param string|null $value
-     * @return string|array|null
+     * @return string|array<string,string>|null
      */
     public function headers(string $key="", string $value=null): string|array|null
     {
@@ -75,7 +79,7 @@ class Response
             return null;
         }
     }
-    
+
     /**
      * Sets response body
      *
@@ -85,7 +89,7 @@ class Response
     {
         $this->body = $body;
     }
-    
+
     /**
      * Gets response body
      *
@@ -95,25 +99,7 @@ class Response
     {
         return $this->body;
     }
-    
-    /**
-     * Redirects to a new location.
-     *
-     * @param string $location
-     * @param boolean $permanent
-     * @param boolean $preventCaching
-     */
-    public static function redirect(string $location, bool $permanent=true, bool $preventCaching=false): never
-    {
-        if ($preventCaching) {
-            header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
-            header("Pragma: no-cache");
-            header("Expires: 0");
-        }
-        header('Location: '.$location, true, $permanent?301:302);
-        exit();
-    }
-    
+
     /**
      * Commits response to client.
      */
@@ -124,12 +110,12 @@ class Response
             if ($this->status) {
                 header("HTTP/1.1 ".$this->status->getId()." ".$this->status->getDescription());
             }
-            
+
             foreach ($this->headers as $name=>$value) {
                 header($name.": ".$value);
             }
         }
-        
+
         // displays body
         echo $this->body;
     }

@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC;
 
 /**
@@ -8,7 +9,7 @@ abstract class ViewResolver implements Runnable
 {
     protected Application $application;
     protected Response $response;
-    
+
     /**
      * Saves objects to be available in implemented getContent() methods.
      *

@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC\Application;
 
 /**
@@ -10,7 +11,7 @@ class Route
     private string $controller;
     private string $view;
     private string $format;
-    
+
     /**
      * Detects route info from <exception> tag
      *
@@ -23,7 +24,7 @@ class Route
         $this->view = (string) $info["view"];
         $this->format = (string) $info["format"];
     }
-    
+
     /**
      * Gets route unique identifier (eg: url)
      *
@@ -53,7 +54,7 @@ class Route
     {
         return $this->view;
     }
-    
+
     /**
      * Gets response format.
      *

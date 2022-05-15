@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC\Response;
 
 use Lucinda\MVC\ConfigurationException;
