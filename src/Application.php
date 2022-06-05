@@ -35,7 +35,7 @@ class Application
     /**
      * Reads XML supplied
      *
-     * @param string $xmlFilePath Relative location of XML file containing settings.
+     * @param  string $xmlFilePath Relative location of XML file containing settings.
      * @throws ConfigurationException If XML is misconfigured.
      */
     protected function readXML(string $xmlFilePath): void
@@ -139,7 +139,7 @@ class Application
     /**
      * Gets content of tag resolver encapsulated as Format objects
      *
-     * @param string $displayFormat
+     * @param  string $displayFormat
      * @return Format|array<string, Format>|null
      */
     public function resolvers(string $displayFormat=""): Format|array|null
@@ -172,7 +172,7 @@ class Application
     /**
      * Reads content of tag routes encapsulated as Route objects
      *
-     * @param string $id
+     * @param  string $id
      * @return Route|array<string, Route>|null
      */
     public function routes(string $id=""): Route|array|null
@@ -187,7 +187,7 @@ class Application
     /**
      * Gets tag based on name from main XML root or referenced XML file if "ref" attribute was set
      *
-     * @param string $name
+     * @param  string $name
      * @return \SimpleXMLElement
      * @throws ConfigurationException If XML is misconfigured.
      */

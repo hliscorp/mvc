@@ -14,7 +14,7 @@ abstract class ViewResolver implements Runnable
      * Saves objects to be available in implemented getContent() methods.
      *
      * @param Application $application
-     * @param Response $response
+     * @param Response    $response
      */
     public function __construct(Application $application, Response $response)
     {

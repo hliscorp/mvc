@@ -26,7 +26,7 @@ class Redirect implements Runnable
     /**
      * Sets whether redirection is permanent
      *
-     * @param bool $flag
+     * @param  bool $flag
      * @return void
      */
     public function setPermanent(bool $flag): void
@@ -37,7 +37,7 @@ class Redirect implements Runnable
     /**
      * Sets whether browsers should prevent caching redirection
      *
-     * @param bool $flag
+     * @param  bool $flag
      * @return void
      */
     public function setPreventCaching(bool $flag): void

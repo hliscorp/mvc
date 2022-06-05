@@ -22,7 +22,7 @@ class Response
     /**
      * Constructs an empty response based on content type
      *
-     * @param string $contentType Value of content type header that will be sent in response
+     * @param string $contentType  Value of content type header that will be sent in response
      * @param string $templateFile Value of view template file that will form the basis of response
      */
     public function __construct(string $contentType, string $templateFile)
@@ -64,8 +64,8 @@ class Response
     /**
      * Gets or sets response headers will send back to user.
      *
-     * @param string $key
-     * @param string|null $value
+     * @param  string      $key
+     * @param  string|null $value
      * @return string|array<string,string>|null
      */
     public function headers(string $key="", string $value=null): string|array|null

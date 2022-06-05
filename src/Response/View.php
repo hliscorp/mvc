@@ -56,7 +56,7 @@ class View implements \ArrayAccess
     /**
      * Checks if value was sent to view by offset
      *
-     * @param mixed $offset
+     * @param  mixed $offset
      * @return bool
      */
     public function offsetExists(mixed $offset): bool
@@ -67,7 +67,7 @@ class View implements \ArrayAccess
     /**
      * Gets value sent to view by offset or null if offset not found
      *
-     * @param mixed $offset
+     * @param  mixed $offset
      * @return mixed
      */
     public function offsetGet(mixed $offset): mixed
@@ -88,6 +88,7 @@ class View implements \ArrayAccess
 
     /**
      * Removes value from view by offset
+     *
      * @param mixed $offset
      */
     public function offsetUnset(mixed $offset): void

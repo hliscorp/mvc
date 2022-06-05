@@ -21,7 +21,7 @@ class Format
     /**
      * Detects format info from <resolver> tag
      *
-     * @param \SimpleXMLElement $info
+     * @param  \SimpleXMLElement $info
      * @throws ConfigurationException If tag is misconfigured
      */
     public function __construct(\SimpleXMLElement $info)
@@ -44,7 +44,7 @@ class Format
     /**
      * Gets response format name (extension).
      *
-     * @return string
+     * @return  string
      * @example json
      */
     public function getName(): string
@@ -55,7 +55,7 @@ class Format
     /**
      * Gets content type
      *
-     * @return string
+     * @return  string
      * @example application/json
      */
     public function getContentType(): string
@@ -76,7 +76,7 @@ class Format
     /**
      * Gets view resolver class name
      *
-     * @return string
+     * @return  string
      * @example JsonResolver
      */
     public function getViewResolver(): string
