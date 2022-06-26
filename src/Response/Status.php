@@ -14,19 +14,44 @@ class Status
     /**
      * Sets response HTTP status
      *
-     * @param string $status
+     * @param HttpStatus|int $status
      * @throws ConfigurationException If incorrect numeric code is supplied.
      */
-    public function __construct(string $status)
+    public function __construct($status)
+    {
+        $validatedStatus = $this->validate($status);
+
+        $position = strpos($validatedStatus, " ");
+        $this->id = (int) substr($validatedStatus, 0, $position);
+        $this->description = substr($validatedStatus, $position+1);
+    }
+
+    /**
+     * Validates HTTP status with constants of HttpStatus enum
+     *
+     * @param HttpStatus|int $status
+     * @return HttpStatus
+     * @throws ConfigurationException
+     */
+    private function validate($status): string
     {
         $reflectionClass = new \ReflectionClass(HttpStatus::class);
-        if (!in_array($status, $reflectionClass->getConstants())) {
+        $possibleStatuses = $reflectionClass->getConstants();
+        if (is_int($status)) {
+            $completeStatus = "";
+            foreach ($possibleStatuses as $statusText) {
+                if (strpos($statusText, $status." ")===0) {
+                    $completeStatus = $statusText;
+                }
+            }
+            if (!$completeStatus) {
+                throw new ConfigurationException("Unsupported HTTP status code: ".$status);
+            }
+            return $completeStatus;
+        } else if (!in_array($status, $possibleStatuses)) {
             throw new ConfigurationException("Unsupported HTTP status: ".$status);
         }
-
-        $position = strpos($status, " ");
-        $this->id = (int) substr($status, 0, $position);
-        $this->description = substr($status, $position+1);
+        return $status;
     }
 
     /**

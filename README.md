@@ -204,17 +204,17 @@ To better understand how views will be resolved in the end, check [How Are Views
 Class [Response](https://github.com/aherne/mvc/blob/master/src/Response.php) encapsulates operations to be used in generating response. It defines following public methods relevant to developers:
 
 
-| Method | Arguments | Returns | Description |
-| --- | --- | --- | --- |
-| getBody | void | string | Gets response body saved by method below. |
-| setBody | string $body | void | Sets response body. |
-| getStatus | void | [Response\Status](#class-response-status) | Gets response http status based on code saved by method below. |
-| setStatus | int $code | void | Sets response http status code. |
-| headers | void | array | Gets all response http headers saved by methods below. |
-| headers | string $name | ?string | Gets value of a response http header based on its name. If not found, null is returned! |
-| headers | string $name, string $value | void | Sets value of response http header based on its name. |
-| redirect | string $location, bool $permanent=true, bool $preventCaching=false | void | Redirects caller to location url using 301 http status if permanent, otherwise 302. |
-| view | void | [Response\View](#class-response-view) | Gets a pointer to view encapsulating data based on which response body will be compiled |
+| Method | Arguments                                                          | Returns                                   | Description                                                                                                         |
+| --- |--------------------------------------------------------------------|-------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
+| getBody | void                                                               | string                                    | Gets response body saved by method below.                                                                           |
+| setBody | string $body                                                       | void                                      | Sets response body.                                                                                                 |
+| getStatus | void                                                               | [Response\Status](#class-response-status) | Gets response http status based on code saved by method below.                                                      |
+| setStatus | mixed $code                                                        | void | Sets response http status by numeric code (int) or [Response\HttpStatus](#class-response-httpstatus) enum (string). |
+| headers | void                                                               | array                                     | Gets all response http headers saved by methods below.                                                              |
+| headers | string $name                                                       | ?string                                   | Gets value of a response http header based on its name. If not found, null is returned!                             |
+| headers | string $name, string $value                                        | void                                      | Sets value of response http header based on its name.                                                               |
+| redirect | string $location, bool $permanent=true, bool $preventCaching=false | void                                      | Redirects caller to location url using 301 http status if permanent, otherwise 302.                                 |
+| view | void                                                               | [Response\View](#class-response-view)     | Gets a pointer to view encapsulating data based on which response body will be compiled                             |
 
 When API completes handling, it will call *commit* method to send headers and response body back to caller!
 
@@ -226,6 +226,10 @@ Class [Response\Status](https://github.com/aherne/mvc/blob/master/src/Response/S
 | --- | --- | --- | --- |
 | getDescription | void | string | Gets response http status code description (eg: "not modified"). |
 | getId | void | int | Sets response http status code. |
+
+### Class Response HttpStatus
+
+Interface [Response\HttpStatus](https://github.com/aherne/mvc/blob/master/src/Response/HttpStatus.php) enumerates supported HTTP statuses.
 
 ### Class Response View
 

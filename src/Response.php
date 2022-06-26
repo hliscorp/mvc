@@ -30,10 +30,10 @@ class Response
     /**
      * Sets HTTP response status by its numeric code.
      *
-     * @param HttpStatus $status
+     * @param HttpStatus|int $status
      * @throws ConfigurationException If status code is invalid.
      */
-    public function setStatus(string $status): void
+    public function setStatus($status): void
     {
         $this->status = new Status($status);
     }

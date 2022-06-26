@@ -11,7 +11,7 @@ class StatusTest
     
     public function __construct()
     {
-        $this->object = new Status(HttpStatus::NOT_FOUND);
+        $this->object = new Status(404);
     }
 
     public function getId()
