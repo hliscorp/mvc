@@ -15,7 +15,7 @@ class ResponseTest
     
     public function setStatus()
     {
-        $this->object->setStatus(404);
+        $this->object->setStatus(Response\HttpStatus::NOT_FOUND);
         return new Result(true);
     }
     

@@ -12,25 +12,21 @@ class Status
     private $description;
 
     /**
-     * Sets response HTTP status by its numeric code
+     * Sets response HTTP status
      *
-     * @param integer $code
+     * @param string $status
      * @throws ConfigurationException If incorrect numeric code is supplied.
      */
-    public function __construct(int $code)
+    public function __construct(string $status)
     {
         $reflectionClass = new \ReflectionClass(HttpStatus::class);
-        $httpStatuses = $reflectionClass->getConstants();
-        foreach ($httpStatuses as $status) {
-            if (strpos($status, $code)===0) {
-                $position = strpos($status, " ");
-                $this->id = (int) substr($status, 0, $position);
-                $this->description = substr($status, $position+1);
-            }
+        if (!in_array($status, $reflectionClass->getConstants())) {
+            throw new ConfigurationException("Unsupported HTTP status: ".$status);
         }
-        if (!$this->id) {
-            throw new ConfigurationException("Unsupported HTTP status: ".$code);
-        }
+
+        $position = strpos($status, " ");
+        $this->id = (int) substr($status, 0, $position);
+        $this->description = substr($status, $position+1);
     }
 
     /**

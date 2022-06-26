@@ -1,6 +1,7 @@
 <?php
 namespace Test\Lucinda\MVC\Response;
 
+use Lucinda\MVC\Response\HttpStatus;
 use Lucinda\MVC\Response\Status;
 use Lucinda\UnitTest\Result;
 
@@ -10,7 +11,7 @@ class StatusTest
     
     public function __construct()
     {
-        $this->object = new Status(404);
+        $this->object = new Status(HttpStatus::NOT_FOUND);
     }
 
     public function getId()
