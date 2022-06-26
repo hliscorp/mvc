@@ -96,24 +96,6 @@ class Response
     }
     
     /**
-     * Redirects to a new location.
-     *
-     * @param string $location
-     * @param boolean $permanent
-     * @param boolean $preventCaching
-     */
-    public static function redirect(string $location, bool $permanent=true, bool $preventCaching=false): void
-    {
-        if ($preventCaching) {
-            header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1.
-            header("Pragma: no-cache");
-            header("Expires: 0");
-        }
-        header('Location: '.$location, true, $permanent?301:302);
-        exit();
-    }
-    
-    /**
      * Commits response to client.
      */
     public function commit(): void

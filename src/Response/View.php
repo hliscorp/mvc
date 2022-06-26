@@ -1,4 +1,5 @@
 <?php
+
 namespace Lucinda\MVC\Response;
 
 /**
@@ -7,8 +8,11 @@ namespace Lucinda\MVC\Response;
 class View implements \ArrayAccess
 {
     private $file;
+    /**
+     * @var array<int|string,mixed>
+     */
     private $data = [];
-    
+
     /**
      * Sets path to template that will be the foundation of view
      *
@@ -18,7 +22,7 @@ class View implements \ArrayAccess
     {
         $this->file = $file;
     }
-    
+
     /**
      * Sets path to template that will be the foundation of view
      *
@@ -28,7 +32,7 @@ class View implements \ArrayAccess
     {
         $this->file = $path;
     }
-    
+
     /**
      * Gets path to template that will be the foundation of view
      *
@@ -38,39 +42,39 @@ class View implements \ArrayAccess
     {
         return $this->file;
     }
-    
+
     /**
      * Gets data that will be bound to template or will become the view itself.
      *
-     * @return array
+     * @return array<int|string,mixed>
      */
     public function getData(): array
     {
         return $this->data;
     }
-    
+
     /**
      * Checks if value was sent to view by offset
      *
-     * @param mixed $offset
+     * @param  mixed $offset
      * @return bool
      */
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
-    
+
     /**
      * Gets value sent to view by offset or null if offset not found
      *
-     * @param mixed $offset
-     * @return NULL|mixed
+     * @param  mixed $offset
+     * @return mixed
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
-        return (isset($this->data[$offset])?$this->data[$offset]:null);
+        return ($this->data[$offset] ?? null);
     }
-    
+
     /**
      * Sets value to view by offset
      *
@@ -81,9 +85,10 @@ class View implements \ArrayAccess
     {
         $this->data[$offset] = $value;
     }
-    
+
     /**
      * Removes value from view by offset
+     *
      * @param mixed $offset
      */
     public function offsetUnset($offset): void

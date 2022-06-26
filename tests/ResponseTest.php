@@ -52,12 +52,6 @@ class ResponseTest
     }
     
     
-    public function redirect()
-    {
-        return new Result(false, "Redirection cannot be unit tested!");
-    }
-    
-    
     public function commit()
     {
         ob_start();
