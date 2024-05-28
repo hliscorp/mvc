@@ -5,6 +5,7 @@ use Lucinda\MVC\Response\HttpStatus;
 use Lucinda\MVC\Response\Status;
 use Lucinda\MVC\Response\View;
 
+
 /**
  * Compiles information about response
  */
@@ -24,6 +25,10 @@ class Response
     public function __construct(string $contentType, string $templateFile)
     {
         $this->headers["Content-Type"] = $contentType;
+        if (preg_match("/^8\./", phpversion())) {
+            // Hack required to make it compatible with versions 8.1+
+            require_once __DIR__."/Response/View_PHP8.php";
+        }
         $this->view = new View($templateFile);
     }
 
