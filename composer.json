@@ -1,20 +1,24 @@
 {
-    "name": "hlis/abstract_mvc",
+    "name": "lucinda/abstract_mvc",
     "type": "library",
     "description": "Abstract MVC API to be extended based on STDIN type (url requests, exceptions)",
-    "keywords": ["abstract","mvc", "api"],
+    "keywords": [
+        "abstract",
+        "mvc",
+        "api"
+    ],
     "license": "MIT",
     "require": {
         "php": "^8.1"
     },
     "require-dev": {
-    	"hlis/unit-testing": "^2.0"
+        "lucinda/unit-testing": "^2.0"
     },
     "autoload": {
-    	"psr-4": {
-        	"Lucinda\\MVC\\": "src/",
-            "Test\\Lucinda\\MVC\\":"tests/"
-    	}
+        "psr-4": {
+            "Lucinda\\MVC\\": "src/",
+            "Test\\Lucinda\\MVC\\": "tests/"
+        }
     },
     "authors": [
         {
@@ -23,7 +27,10 @@
             "role": "Developer"
         }
     ],
-  "repositories": [
-    { "type": "vcs", "url": "https://github.com/hliscorp/unit-testing" }
-  ]
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/hliscorp/unit-testing"
+        }
+    ]
 }
